@@ -1,21 +1,30 @@
 <template>
-  <div>
-    Select
-    <select v-model="currentEntry" @change="updatePages">
-      <option v-for="(entry, i) in showEnteries" :key="i" :value="entry">{{ entry }}</option>
-    </select>
-    Enteries
-  </div>
   <TableData :columns="columns" :dataset="filteredData"></TableData>
-  <div>
+  <div class="page-change-section pull-left">
+    <div class="pull-left" v-if="currentEntry !== data.length">
+      <span class=" padding select-btn" @click="changePage('first')">&laquo;</span>
+      <span class=" padding select-btn" @click="changePage('previous')">&#8249;</span>
+      <span class=" padding text">Showing {{ currentPage }} of {{ pages }}</span>
+      <span class=" padding select-btn" @click="changePage('next')">&#8250;</span>
+      <span class=" padding select-btn" @click="changePage('last')">&raquo;</span>
+    </div>
+  </div>
+  <div class="select-entry-section pull-right">
     <button
       class="btn"
-      :class="{ selected: currentPage === page }"
-      v-for="(page, i) in pages"
-      :key="i"
-      @click="updateData(page)"
+      :class="{ selected: currentEntry === data.length }"
+      @click="updatePages(data.length)"
     >
-      {{ page }}
+      All
+    </button>
+    <button
+      class="btn"
+      v-for="(entry, i) in showEnteries"
+      :key="i"
+      :class="{ selected: currentEntry === entry }"
+      @click="updatePages(entry)"
+    >
+      {{ entry }}
     </button>
   </div>
 </template>
@@ -59,9 +68,9 @@ export default {
     let data = ref([]);
     let filteredData = ref([]);
     let currentPage = ref(1);
-    let currentEntry = ref(5);
+    let currentEntry = ref(10);
     let pages = ref(0);
-    let showEnteries = ref([5, 10, 15, 25, 50]);
+    let showEnteries = ref([10, 25, 50, 100]);
 
     axios.get("data.json").then((res) => {
       data.value = res.data;
@@ -75,15 +84,24 @@ export default {
       pages.value = Math.ceil(data.value.length / currentEntry.value);
     };
 
-    let updateData = (page) => {
-      currentPage.value = page;
+    let changePage = (page) => {
+      if (page === 'first') {
+        currentPage.value = 1;
+      } else if(page === 'previous') {
+        currentPage.value = currentPage.value === 1 ? currentPage.value : currentPage.value - 1; 
+      } else if (page === 'next') {
+        currentPage.value = currentPage.value === pages.value.length ? currentPage.value : currentPage.value + 1;
+      } else if (page === 'last') {
+        currentPage.value = pages.value;
+      }
       pagination();
     };
 
-    let updatePages = () => {
+    let updatePages = (entry) => {
+      currentEntry.value = entry;
       currentPage.value = 1;
       pagination();
-    }
+    };
 
     return {
       columns,
@@ -92,9 +110,10 @@ export default {
       currentEntry,
       pagination,
       pages,
-      updateData,
+      changePage,
       currentPage,
-      updatePages
+      updatePages,
+      data,
     };
   },
 };
@@ -111,9 +130,9 @@ export default {
 }
 
 .btn {
-  background-color: #4caf50; /* Green */
+  background-color: #fff; /* Green */
   border: none;
-  color: white;
+  color: black;
   padding: 8px 8px;
   text-align: center;
   text-decoration: none;
@@ -122,6 +141,22 @@ export default {
 }
 
 .selected {
-  background-color: orange;
+  background-color: blue;
+}
+
+.pull-right {
+  float: right;
+}
+
+.pull-left {
+  float: left;
+}
+
+.padding {
+  padding: 8px 8px;
+}
+
+.select-btn {
+  cursor: pointer;
 }
 </style>
