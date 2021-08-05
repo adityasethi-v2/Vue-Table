@@ -90,7 +90,7 @@ export default {
       } else if(page === 'previous') {
         currentPage.value = currentPage.value === 1 ? currentPage.value : currentPage.value - 1; 
       } else if (page === 'next') {
-        currentPage.value = currentPage.value === pages.value.length ? currentPage.value : currentPage.value + 1;
+        currentPage.value = currentPage.value === pages.value ? currentPage.value : currentPage.value + 1;
       } else if (page === 'last') {
         currentPage.value = pages.value;
       }
