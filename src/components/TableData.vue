@@ -55,8 +55,6 @@ export default defineComponent({
     let pagination = () => {
       let trimStart = (currentPage.value - 1) * currentEntry.value;
       let trimEnd = trimStart + currentEntry.value;
-      console.log(trimStart, trimEnd)
-      console.log(data.value);
       filteredData.value = data.value.slice(trimStart, trimEnd);
       pages.value = Math.ceil(data.value.length / currentEntry.value);
     };
